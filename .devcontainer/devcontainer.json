@@ -4,14 +4,15 @@
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:4": {},
     "ghcr.io/devcontainers/features/azure-cli:1": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {}
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/sshd:1": {}
   },
   "remoteUser": "vscode",
   "hostRequirements": {"cpus": 4, "memory": "8gb", "storage": "32gb"},
   "forwardPorts": [8000, 8082],
   "portsAttributes": {
-    "8000": {"label": "Generated PR report", "onAutoForward": "notify", "visibility": "private"},
-    "8082": {"label": "DTS workflow dashboard", "onAutoForward": "notify", "visibility": "private"},
+    "8000": {"label": "Generated PR report", "onAutoForward": "notify"},
+    "8082": {"label": "DTS workflow dashboard", "onAutoForward": "notify"},
     "7071": {"label": "Functions host", "onAutoForward": "ignore"},
     "8080": {"onAutoForward": "ignore"},
     "10000": {"onAutoForward": "ignore"},

@@ -2,6 +2,8 @@
 
 公式の [workflow-subagents-preview](https://github.com/Azure/azure-functions-agents-runtime/tree/3ab9e8d9b9749c2a4ad15f65703a13255fbecb2b/samples/workflow-subagents-preview) を、GitHub Codespaces で実行するための独立したサンプルです。ランタイムも同じコミットに固定しています。
 
+[Codespaces で開く](https://codespaces.new/k-miyake/workflow-subagents-codespaces-demo)
+
 Queue の依頼から、モデルが動的に実行計画を作り、3 件の PR を別々のサブエージェントで並列分析します。分析結果を別のエージェントが日本語 HTML にまとめ、Blob に保存します。DTS ダッシュボードで実行を観察できます。
 
 **PR の状態と履歴は模擬データ、ワークフローとモデル呼び出しは実処理です。** GitHub API への接続や PR の変更は行いません。Hosted Skills / Dynamic Workflows は Preview です。
@@ -31,10 +33,10 @@ git init -b main
 git add .
 git commit -m "Add workflow subagents Codespaces demo"
 gh repo create workflow-subagents-codespaces-demo --private --source=. --push
-gh repo view --web
+gh codespace create -R k-miyake/workflow-subagents-codespaces-demo -b main -m standardLinux32gb --idle-timeout 30m
 ```
 
-GitHub の **Code → Codespaces → Create codespace on main** を選びます。4 cores / 8 GB 以上を指定してください。初回セットアップで Python 3.13、Functions Core Tools v4、Azure CLI、Docker、Python 依存パッケージを用意します。初期化が終わるまで待ちます。
+既存リポジトリでは `gh codespace create` から実行できます。4 cores / 8 GB 以上を指定してください。初回セットアップで Python 3.13、Functions Core Tools v4、Azure CLI、Docker、Python 依存パッケージを用意します。初期化が終わるまで待ちます。CLI から接続する場合は `gh codespace ssh -R k-miyake/workflow-subagents-codespaces-demo` を使えます。
 
 Codespaces は利用枠に応じて課金されます。Azure 上の Functions、Storage、DTS リソースの新規作成は不要です。モデル推論には既存の Azure 接続先を利用し、推論料金が発生します。
 
