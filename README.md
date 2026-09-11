@@ -4,6 +4,8 @@
 
 [Codespaces で開く](https://codespaces.new/k-miyake/workflow-subagents-codespaces-demo)
 
+**すでに Codespace を開いている場合は「2. 各 Codespace で初期設定する」から進めてください。** 自分が開いている Codespace のターミナルで設定・起動します。
+
 Queue の依頼から、モデルが動的に実行計画を作り、3 件の PR を別々のサブエージェントで並列分析します。分析結果を別のエージェントが日本語 HTML にまとめ、Blob に保存します。DTS ダッシュボードで実行を観察できます。
 
 **PR の状態と履歴は模擬データ、ワークフローとモデル呼び出しは実処理です。** GitHub API への接続や PR の変更は行いません。Hosted Skills / Dynamic Workflows は Preview です。
@@ -42,22 +44,68 @@ gh codespace create -R k-miyake/workflow-subagents-codespaces-demo -b main -m st
 
 Codespaces は利用枠に応じて課金されます。Azure 上の Functions、Storage、DTS リソースの新規作成は不要です。モデル推論には既存の Azure 接続先を利用し、推論料金が発生します。
 
-## 2. モデルを設定する
+## 2. 各 Codespace で初期設定する
+
+**接続設定と Azure ログインは Codespace ごとに必要です。** 設定ファイル `src/local.settings.json` は Git 管理対象外なので、別の Codespace で設定済みでも、新しく作った Codespace には引き継がれません。
+
+以降は、デモを実行したい Codespace 内のターミナルで操作します。
+
+### Azure にログインし、サブスクリプションを選ぶ
+
+```bash
+cd /workspaces/workflow-subagents-codespaces-demo
+az account show --output table
+```
+
+未ログインのエラーが出た場合は、次を実行し、表示された URL とコードで本人認証を完了してください。
+
+```bash
+az login --use-device-code
+```
+
+利用可能なサブスクリプションを確認し、使用するものを選択します。次は `MVP-FY2026` を選ぶ例です。
+
+```bash
+az account list --output table
+az account set --subscription "MVP-FY2026"
+az account show --query name --output tsv
+```
+
+最後に `MVP-FY2026` が表示されれば切り替え完了です。別のサブスクリプションを使う場合は名前を置き換えてください。
+
+サブスクリプションの選択は Azure CLI の操作対象を変えるものです。デモの Foundry 接続先は次の手順で別途設定します。モデル推論はその接続先のリソースを利用するため、`az account set` だけではモデルの利用先・課金先は切り替わりません。
+
+### Foundry の接続先とモデルを設定する
 
 公式サンプルと同じ **Microsoft Foundry** が初期設定です。必要なものは、既存の Foundry プロジェクトエンドポイント、そのプロジェクトで利用できるモデルデプロイ名、推論を実行できるアカウントです。
 
 ```bash
 ./demo configure
-az login --use-device-code
-./demo doctor
 ```
 
-`configure` の 2 つの入力欄に、実際の値を入力します。
+表示される 2 つの入力欄に、実際の値を入力します。URL は Markdown リンクではなく、`https://` から始まる文字列だけを貼り付けてください。
 
 | 入力 | 指定する値 |
 | --- | --- |
 | `FOUNDRY_PROJECT_ENDPOINT` | Foundry に表示される `/api/projects/<project>` を含む HTTPS エンドポイント |
 | `FOUNDRY_MODEL` | 使用する既存モデルのデプロイ名。モデル名とデプロイ名が異なる場合はデプロイ名 |
+
+対話入力の代わりに引数でも設定できます。以下の `<resource>`、`<project>`、`<deployment-name>` は、利用する環境の値に置き換えてから実行してください。
+
+```bash
+./demo configure \
+  --provider foundry \
+  --endpoint "https://<resource>.services.ai.azure.com/api/projects/<project>" \
+  --model "<deployment-name>"
+```
+
+`Saved foundry configuration.` と表示されたら、前提条件を確認します。
+
+```bash
+./demo doctor
+```
+
+`FAIL` がなければ起動へ進みます。`Model authentication: use az login ...` は常に表示される案内で、ログイン失敗の判定ではありません。
 
 モデルにはツール呼び出しを扱えるものを利用してください。特定のモデルがデプロイ済みとは仮定していません。権限やネットワーク制限がある場合は、その環境の管理者による設定が必要です。
 
@@ -74,26 +122,34 @@ API キー方式を使う場合のみ、GitHub の **Settings → Codespaces →
 
 ## 3. デモを実行する
 
-ターミナル A:
+Codespace 内でターミナルを 2 つ開きます。同じ Codespace を再開した場合も、サービスの起動には `./demo start` が必要です。設定済みの接続先を使う場合は `configure` を繰り返す必要はありません。初期設定のエラーが出た場合は「2」に戻ってください。
+
+ターミナル A でサービスを起動します。
 
 ```bash
+cd /workspaces/workflow-subagents-codespaces-demo
 ./demo start
 ```
 
 Azurite と DTS が起動し、Functions ホストとレポート表示サーバーが起動します。Functions の起動完了と Queue トリガーの登録を確認してください。このターミナルは開いたままにします。
 
-ターミナル B:
-
-```bash
-./demo submit --wait
-```
-
-Codespaces の **PORTS** タブから次を開きます。ポートの公開範囲は **Private** に保ってください。
+Codespaces の **PORTS** タブから次を開きます。今開いている Codespace の転送先を使い、ポートの公開範囲は **Private** に保ってください。
 
 | ポート | 見るもの |
 | --- | --- |
 | 8082 | DTS ダッシュボード。Task Hub `prstatusreports` を選択し、インスタンス・各タスクの状態を確認 |
 | 8000 | 生成後に `/report.html` を開く。最初の `/` は実行案内 |
+
+DTS ダッシュボードを開いたら、ターミナル B から依頼を投入します。
+
+```bash
+cd /workspaces/workflow-subagents-codespaces-demo
+./demo submit --wait
+```
+
+DTS で今回の新しいインスタンスを開き、**3 件の PR を並列分析 → 全結果を日本語 HTML に統合 → Blob に保存**というタスクと依存関係を観察します。ターミナル B に **`PASS`** が表示されたら、8000 の `/report.html` を開くか再読み込みしてください。DTS のワークフローが `Completed` になったことも確認します。
+
+レポートでは、各 PR の状態、CI 失敗・Draft、次に取るアクションを見せます。前回の HTML が残っている場合も、今回の `PASS` を待ってから更新結果として紹介してください。
 
 このサンプルの入口は Queue です。チャット画面は追加していません。7071 は Functions ホスト、8080 は DTS の内部接続、10000–10002 は Azurite の内部接続です。
 
@@ -113,6 +169,8 @@ Blob の保存先は `workflow-reports/reports/functions-pr-status.html` のま�
 
 ## 5. 検証と終了
 
+追加の検証を行う場合のみ、次を実行します。通常デモの終了にこれらのコマンドは必須ではありません。
+
 ```bash
 ./demo test
 ./demo verify --timeout 600
@@ -126,7 +184,14 @@ Blob の保存先は `workflow-reports/reports/functions-pr-status.html` のま�
 ./demo stop
 ```
 
-最後に GitHub の Codespaces 一覧から **Stop codespace** を実行します。`./demo stop` だけでは Codespace 自体は停止しません。
+最後に、**手元 PC のターミナル**で GitHub CLI を使って Codespace を停止します。`./demo stop` だけでは Codespace 自体は停止しません。
+
+```bash
+gh codespace list -R k-miyake/workflow-subagents-codespaces-demo
+gh codespace stop -c "<codespace-name>"
+```
+
+`<codespace-name>` は一覧の `NAME` 列にある、今回自分が使用した Codespace の名前に置き換えてください。
 
 Azurite のデータは Docker volume に残ります。DTS エミュレーターは実行状態の永続保存先として扱わないでください。エミュレーターや Codespace の停止後に実行中ワークフローが復元されることは、この構成では保証しません。ワーカー再起動からの継続を試す場合は、DTS/Azurite を動かしたまま Functions だけを Ctrl+C で停止・再起動します。
 
@@ -134,6 +199,7 @@ Azurite のデータは Docker volume に残ります。DTS エミュレータ�
 
 | 症状 | 対処 |
 | --- | --- |
+| `FAIL: Set a valid HTTPS FOUNDRY_PROJECT_ENDPOINT using ./demo configure.` | 今開いている Codespace で `./demo configure` を実行し、実際のプロジェクトエンドポイントとモデルデプロイ名を入力してから `./demo start`。サブスクリプションの選択だけでは接続先は設定されない |
 | `.venv` がない / セットアップ失敗 | 作成ログを確認後 `./demo setup`。Codespaces の Rebuild Container でも再構築可能 |
 | Docker に接続できない | コンテナーの起動を待って `docker info`。解消しなければ Rebuild Container |
 | 401 / 403 | `az login --use-device-code` をやり直し、プロジェクト・モデルの利用権限を確認 |
