@@ -1,0 +1,9 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {"label": "Demo: start", "type": "shell", "command": "./demo start", "problemMatcher": []},
+    {"label": "Demo: submit and wait", "type": "shell", "command": "./demo submit --wait", "problemMatcher": []},
+    {"label": "Demo: doctor", "type": "shell", "command": "./demo doctor", "problemMatcher": []},
+    {"label": "Demo: verify isolated E2E", "type": "shell", "command": "./demo verify --timeout 600", "problemMatcher": []}
+  ]
+}

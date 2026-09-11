@@ -1,0 +1,20 @@
+name: workflow-subagents-demo
+services:
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:3.35.0
+    command: azurite --silent --skipApiVersionCheck --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --location /data
+    ports:
+      - "127.0.0.1:10000:10000"
+      - "127.0.0.1:10001:10001"
+      - "127.0.0.1:10002:10002"
+    volumes:
+      - azurite-data:/data
+  dts:
+    image: mcr.microsoft.com/dts/dts-emulator@sha256:361323065a608d605f9d3ae56b854eb11f1c47fcc16845a37f948f03ca9c5fac
+    environment:
+      DTS_TASK_HUB_NAMES: prstatusreports
+    ports:
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:8082:8082"
+volumes:
+  azurite-data:

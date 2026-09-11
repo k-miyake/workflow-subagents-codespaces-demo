@@ -1,0 +1,18 @@
+{
+  "report_title": "Functions PR 状況レポート（模擬データ）",
+  "report_blob": "reports/functions-pr-status.html",
+  "pull_requests": [
+    {
+      "url": "https://github.com/Azure/azure-functions-host/pull/123",
+      "last_checked_at": "2026-07-22T17:00:00Z"
+    },
+    {
+      "url": "https://github.com/Azure/azure-functions-python-worker/pull/456",
+      "last_checked_at": "2026-07-22T17:00:00Z"
+    },
+    {
+      "url": "https://github.com/Azure/azure-functions-durable-extension/pull/796",
+      "last_checked_at": "2026-07-22T17:00:00Z"
+    }
+  ]
+}

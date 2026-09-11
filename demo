@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")"
+if [[ "${1:-}" == setup ]]; then exec bash scripts/bootstrap.sh; fi
+if [[ ! -x .venv/bin/python ]]; then
+  echo "Run ./demo setup first (Python 3.13+ required)." >&2
+  exit 1
+fi
+export PATH="$PWD/.venv/bin:$PATH"
+command="${1:-help}"
+if [[ $# -gt 0 ]]; then shift; fi
+case "$command" in
+  configure) exec python scripts/settings.py configure "$@" ;;
+  doctor) exec python scripts/doctor.py "$@" ;;
+  start)
+    python scripts/doctor.py
+    docker compose up -d
+    python scripts/run_host.py
+    ;;
+  submit) exec python scripts/request.py "$@" ;;
+  verify) exec python scripts/verify_upstream.py "$@" ;;
+  test)
+    python -m ruff check scripts tests
+    python -m pytest -q tests
+    ;;
+  stop) exec docker compose stop ;;
+  logs) exec docker compose logs --tail=80 "$@" ;;
+  *)
+    echo 'Usage: ./demo {setup|configure|doctor|start|submit --wait|verify|test|stop|logs}'
+    [[ "$command" == help ]]
+    ;;
+esac

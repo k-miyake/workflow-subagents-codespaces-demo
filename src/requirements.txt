@@ -1,0 +1,3 @@
+# Upstream sample and runtime are pinned to the same reviewed revision.
+azurefunctions-agents-runtime @ git+https://github.com/Azure/azure-functions-agents-runtime.git@3ab9e8d9b9749c2a4ad15f65703a13255fbecb2b
+azure-storage-queue==12.13.0
