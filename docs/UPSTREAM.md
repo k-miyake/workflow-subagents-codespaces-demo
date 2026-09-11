@@ -17,6 +17,8 @@
 4. 公式 `scripts/verify.py` を `scripts/verify_upstream.py` として同梱。エミュレーターの参照を本デモと同じものに固定した。
 5. Codespaces、Docker Compose、設定・起動・Queue 投入・レポート閲覧用コマンド、テスト、日本語手順を追加した。
 6. `UseDevelopmentStorage=true` は Python Storage SDK が展開しないため、Azurite の完全な接続文字列をテンプレートに指定した。含まれるキーは Azurite が公表するエミュレーター専用キーであり、Azure リソースの認証情報ではない。実際の Queue/Blob テストで検証した。
+7. 起動前に入力 Queue を作成して、初回投入前の QueueNotFound ログを防止した。
+8. Codespaces ビルドで確認した、ベースイメージに含まれる未使用 Yarn apt フィードの署名エラーを、当該フィードの除去で解消した。
 
 エージェントの分離、ワークフロー生成・実行、模擬 PR ツール、Blob 出力は公式ランタイムと公式サンプルに依存する。独自の静的オーケストレーターや模擬モデルで置き換えていない。
 

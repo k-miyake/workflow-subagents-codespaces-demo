@@ -7,6 +7,8 @@ import threading
 import time
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
+from azure.core.exceptions import ResourceExistsError
+from azure.storage.queue import QueueClient
 from settings import ROOT, load_environment
 from verify_upstream import _wait_for_port
 
@@ -21,9 +23,14 @@ class ReportHandler(SimpleHTTPRequestHandler):
 
 
 def main():
-    load_environment()
+    values = load_environment()
     for port in [10000, 10001, 10002, 8080, 8082]:
         _wait_for_port(port, timeout=60)
+    with QueueClient.from_connection_string(values["AzureWebJobsStorage"], "pr-status-requests") as queue:
+        try:
+            queue.create_queue()
+        except ResourceExistsError:
+            pass
     reports = ROOT / ".demo/reports"
     reports.mkdir(parents=True, exist_ok=True)
     index = reports / "index.html"
