@@ -8,6 +8,8 @@ Queue の依頼から、モデルが動的に実行計画を作り、3 件の PR
 
 **PR の状態と履歴は模擬データ、ワークフローとモデル呼び出しは実処理です。** GitHub API への接続や PR の変更は行いません。Hosted Skills / Dynamic Workflows は Preview です。
 
+2026-09-12 に Codespace 上で実モデルを使った通し実行を 2 回確認済みです。3 件の並列分析、日本語 HTML 生成、同じ Blob の更新まで成功しました。[検証記録と証跡](docs/VALIDATION.md) を参照してください。
+
 ```mermaid
 flowchart LR
     Q[Storage Queue / Azurite] --> C[Coordinator / モデルが計画生成]

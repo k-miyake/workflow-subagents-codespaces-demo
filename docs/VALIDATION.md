@@ -1,6 +1,6 @@
 # 検証記録
 
-検証日: 2026-09-11
+検証日: 2026-09-11–12（日本時間）
 
 ## 完了
 
@@ -16,9 +16,36 @@
 - Codespace 上でも `14 passed`、Ruff / `pip check` 成功。Azurite / DTS の起動、DTS ダッシュボード HTTP 200、レポート表示サーバー HTTP 200、Functions host `Running` を確認。
 - ベースイメージ内の未使用 Yarn apt フィードの署名エラーを除去して再構築成功。署名検証は無効化していない。
 
-## 未完了
+## 実モデルでの通し確認（2026-09-12）
 
-- 実モデルへの認証・接続、および Queue → サブエージェント → HTML → Blob の E2E: 指定されたモデル接続先は設定済み。Azure 本人認証待ち。
-- 実モデルでのワーカー再起動からの継続。
+Codespace で Azure CLI による本人認証を完了し、指定された Microsoft Foundry の既存デプロイを使って、通常のデモ経路を 2 回実行した。
 
-実モデル E2E は Codespaces で `./demo verify --timeout 600` を実行して確認する。DTS と Azurite が動くだけでは動的ワークフローの E2E 成功とは判定しない。
+```bash
+./demo start
+# 別のターミナルで、各回の完了を待って実行
+./demo submit --wait --timeout 600
+./demo submit --wait --timeout 600
+```
+
+**2 回とも成功。推論は実モデル、PR の状態・履歴は模擬データ。** 実行時のコードは `6dfaf4bb67998c4bb7380952201361fbbd8842fb`。
+
+| 確認項目 | 結果 |
+| --- | --- |
+| Queue からの起動 | 2 件の異なるメッセージがワークフローを起動 |
+| モデルによる計画 | 3 件の独立した PR analyst → 全分析結果を待つ report writer → publisher の依存関係を、両回の `start_workflow` 呼び出しで確認 |
+| 並列分析 | 1 回目は 3 activity が同じミリ秒に開始。2 回目は開始時刻の差が 1 ms |
+| ワークフロー完了 | 両回とも orchestrator の状態が `Completed` |
+| 日本語 HTML | 全 3 件の PR URL と模擬データの明記を確認。`script` 要素なし |
+| Blob の更新 | ETag が `0x2308D083F09C4A0` から `0x21AD18584EE6520` に変更 |
+| 同じ保存先 | `workflow-reports` 内の Blob は `reports/functions-pr-status.html` の 1 個のみ |
+| 表示用ファイル | 最終 Blob の内容と `.demo/reports/report.html` が一致。18,632 bytes |
+
+完了時刻、ワークフロー ID、依存関係、ETag、生成 HTML の SHA-256 は [検証証跡 JSON](e2e/2026-09-12.json) に記録した。時刻は JSON 内では UTC。
+
+今回の実モデル検証では `./demo submit --wait` を使用した。別環境で動作する `./demo verify` コマンド自体の実モデル検証は未実施。
+
+## 未実施
+
+- 実モデル処理中の Functions ワーカー再起動からの継続。
+
+通常の通し実行の成功は、エミュレーターや Codespace の停止後の復元を保証するものではない。

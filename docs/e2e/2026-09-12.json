@@ -1,0 +1,122 @@
+{
+  "checked_at_utc": "2026-09-11T22:12:11.585193+00:00",
+  "runtime_revision": "3ab9e8d9b9749c2a4ad15f65703a13255fbecb2b",
+  "inference": "live Microsoft Foundry",
+  "input_pr_data": "synthetic",
+  "requests": [
+    {
+      "message_id": "c5110f7a-4a66-4fc2-b7e5-aa577e8af2ff",
+      "report_blob": "reports/functions-pr-status.html",
+      "previous_etag": null,
+      "etag": "\"0x2308D083F09C4A0\"",
+      "validated": true
+    },
+    {
+      "message_id": "fcb2d161-262f-484e-aa99-1213f76ad2b8",
+      "report_blob": "reports/functions-pr-status.html",
+      "previous_etag": "\"0x2308D083F09C4A0\"",
+      "etag": "\"0x21AD18584EE6520\"",
+      "validated": true
+    }
+  ],
+  "blob_names": [
+    "reports/functions-pr-status.html"
+  ],
+  "report_bytes": 18632,
+  "report_sha256": "00bb0702e094e872ee73a2433949bb2bd871b1b244c2834aca514b303e83c3d5",
+  "all_pr_links_present": true,
+  "synthetic_notice_present": true,
+  "script_elements_present": false,
+  "workflows": [
+    {
+      "workflow_id": "766866c340326669a0861558bd6294b8-f1ba7eacff45481681d77b234ecfc9d8",
+      "status": "Completed",
+      "analyst_start_times_utc": [
+        "[2026-09-11T22:07:24.062Z]",
+        "[2026-09-11T22:07:24.062Z]",
+        "[2026-09-11T22:07:24.062Z]"
+      ],
+      "completed_at_utc": "2026-09-11T22:09:02.580Z",
+      "tasks": [
+        {
+          "id": "review_host_123",
+          "type": "sub_agent",
+          "agent": "pr_status_analyst"
+        },
+        {
+          "id": "review_python_456",
+          "type": "sub_agent",
+          "agent": "pr_status_analyst"
+        },
+        {
+          "id": "review_durable_796",
+          "type": "sub_agent",
+          "agent": "pr_status_analyst"
+        },
+        {
+          "id": "write_report",
+          "type": "sub_agent",
+          "agent": "actionable_report_writer",
+          "depends_on": [
+            "review_host_123",
+            "review_python_456",
+            "review_durable_796"
+          ]
+        },
+        {
+          "id": "publish_report",
+          "type": "tool",
+          "tool": "publish_pr_status_report",
+          "depends_on": [
+            "write_report"
+          ]
+        }
+      ]
+    },
+    {
+      "workflow_id": "5c680d79977305cbce7580b80c7edaf3-7e5b1fdcde724881b7b6d92cfb460463",
+      "status": "Completed",
+      "analyst_start_times_utc": [
+        "[2026-09-11T22:09:53.341Z]",
+        "[2026-09-11T22:09:53.341Z]",
+        "[2026-09-11T22:09:53.342Z]"
+      ],
+      "completed_at_utc": "2026-09-11T22:10:47.774Z",
+      "tasks": [
+        {
+          "id": "review_host_123",
+          "type": "sub_agent",
+          "agent": "pr_status_analyst"
+        },
+        {
+          "id": "review_python_456",
+          "type": "sub_agent",
+          "agent": "pr_status_analyst"
+        },
+        {
+          "id": "review_durable_796",
+          "type": "sub_agent",
+          "agent": "pr_status_analyst"
+        },
+        {
+          "id": "write_report",
+          "type": "sub_agent",
+          "agent": "actionable_report_writer",
+          "depends_on": [
+            "review_host_123",
+            "review_python_456",
+            "review_durable_796"
+          ]
+        },
+        {
+          "id": "publish_report",
+          "type": "tool",
+          "tool": "publish_pr_status_report",
+          "depends_on": [
+            "write_report"
+          ]
+        }
+      ]
+    }
+  ]
+}
