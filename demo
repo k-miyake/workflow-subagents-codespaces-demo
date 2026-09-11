@@ -6,7 +6,8 @@ if [[ ! -x .venv/bin/python ]]; then
   echo "Run ./demo setup first (Python 3.13+ required)." >&2
   exit 1
 fi
-export PATH="$PWD/.venv/bin:$PATH"
+export VIRTUAL_ENV="$PWD/.venv"
+export PATH="$VIRTUAL_ENV/bin:$PATH"
 command="${1:-help}"
 if [[ $# -gt 0 ]]; then shift; fi
 case "$command" in
