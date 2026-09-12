@@ -213,6 +213,9 @@ Azurite のデータは Docker volume に残ります。DTS エミュレータ�
 
 - `.devcontainer/`: Codespaces の Python / CLI / Docker 環境
 - `src/`: 公式サンプルのエージェント、スキル、ツール
+- [src/main.agent.md](src/main.agent.md): PR 状況統括エージェントの日本語定義
+- [src/agents/pr_status_analyst.agent.md](src/agents/pr_status_analyst.agent.md): PR 状況分析エージェントの日本語定義
+- [src/agents/actionable_report_writer.agent.md](src/agents/actionable_report_writer.agent.md): PR アクションレポート作成エージェントの日本語定義
 - `scripts/`: 設定、起動、投入、検証
 - `requests/demo.json`: 3 ケースのデモ入力
 - [docs/DEMO.md](docs/DEMO.md): 進行台本

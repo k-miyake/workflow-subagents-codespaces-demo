@@ -1,6 +1,6 @@
 # 出典と変更点
 
-確認日: 2026-09-11
+確認日: 2026-09-12
 
 - 公式リポジトリ: https://github.com/Azure/azure-functions-agents-runtime
 - 固定コミット: `3ab9e8d9b9749c2a4ad15f65703a13255fbecb2b`（2026-09-09）
@@ -13,7 +13,7 @@
 
 1. `src/requirements.txt` の `-e ../../..` を上記コミットの Git URL に置換し、単独リポジトリで導入可能にした。
 2. `src/local.settings.template.json` のモデル初期値を空欄にし、実在するデプロイ名の指定を必須化した。
-3. レポートライターに日本語での出力と「模擬データ」の明示を指示した。
+3. 3 つの `.agent.md` の名前・説明・指示文と、サブエージェントの呼び出し条件を日本語化した。設定キー、ファイル名、エージェント・スキル・ツールの参照識別子は保持。レポートライターには日本語での出力と「模擬データ」の明示も指示した。
 4. 公式 `scripts/verify.py` を `scripts/verify_upstream.py` として同梱。エミュレーターの参照を本デモと同じものに固定した。
 5. Codespaces、Docker Compose、設定・起動・Queue 投入・レポート閲覧用コマンド、テスト、日本語手順を追加した。
 6. `UseDevelopmentStorage=true` は Python Storage SDK が展開しないため、Azurite の完全な接続文字列をテンプレートに指定した。含まれるキーは Azurite が公表するエミュレーター専用キーであり、Azure リソースの認証情報ではない。実際の Queue/Blob テストで検証した。
